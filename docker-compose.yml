@@ -6,7 +6,7 @@ services:
     restart: always
     volumes:
       - session_data:/app/.wwebjs_auth 
-      - ./.env:/app/.env 
+      - /home/ubuntu/mrx-secrets/serviceAccountKey.json.json:/app/serviceAccountKey.json.json
 
 volumes:
   session_data:
