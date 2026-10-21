@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  bot-mrx:
+    build: .
+    container_name: mrx_bot
+    restart: always
+    volumes:
+      - session_data:/app/.wwebjs_auth 
+      - ./.env:/app/.env 
+
+volumes:
+  session_data:
