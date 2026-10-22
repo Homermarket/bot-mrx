@@ -153,12 +153,14 @@ async function manejarMensaje(message, client) {
 
             if (!bannersEnviados[chatID]) bannersEnviados[chatID] = new Set();
 
+            // 🚀 CORTAFUEGOS DE REGLAS Y SALUDOS (UNIFICADO)
             for (const regla of reglas) {
                 const idRegla = regla.id || regla.media;
                 if (regla.regex.test(textoLimpio) && !bannersEnviados[chatID].has(idRegla)) {
                     bannersEnviados[chatID].add(idRegla);
                     try {
-                        if (fs.existsSync(regla.media)) {
+                        // Verifica que haya imagen asignada antes de intentar enviarla
+                        if (regla.media && fs.existsSync(regla.media)) {
                             const media = MessageMedia.fromFilePath(regla.media);
                             await enviarMensajeBot(client, chatID, media, { caption: regla.respuesta });
                         } else {
@@ -174,20 +176,8 @@ async function manejarMensaje(message, client) {
             }
 
             const textoSinSignos = textoLimpio.replace(/[.,!¡¿?]/g, '').trim();
-            const saludoRegex = /^(hola|buenas|buen d[ií]a|buenas tardes|buenas noches|ola|hello|que tal|qu[eé] tal|saludos|info|informaci[oó]n|servicios|qu[eé] servicios ofrecen|hola qu[eé] servicios tienen|hola quiero info|mas info)$/i;
             
-            if (saludoRegex.test(textoSinSignos) && partesMultimedia.length === 0) {
-                const menuFijo = `¡Hola! Somos MR.X 💻\nServicio Técnico de Computadoras - Cix\n\n✅ Reparación de bisagras y bases\n✅ Reconstrucción de carcasas\n✅ Venta y cambio de pantallas y teclados\n✅ Instalación programas de ingeniería\n✅ Formateo y mantenimiento\n\n🤝 Atención personalizada.\n📍 Estamos en el centro de Chiclayo (Elias Aguirre 331, piso 3).\n\n¿En qué te podemos ayudar hoy?`;
-                const yaSeDijo = memoriaChats[chatID].some(msg => msg.includes("Somos MR.X"));
-                
-                if (!yaSeDijo) {
-                    await enviarMensajeBot(client, chatID, menuFijo);
-                    memoriaChats[chatID].push(`Mr X: ${menuFijo}`);
-                    procesandoChat.delete(chatID);
-                    return; 
-                }
-            }
-            
+            // 🛑 CORTAFUEGOS DE CORTESÍA
             const cortesiaRegex = /^(?:(?:ok|dale|sisi|si|listo|pronto|buenisimo|genial|perfecto|joya|impecable|excelente|oka|chau|hasta ma[ñn]ana|hasta luego|buenas noches|buenas tardes|buen dia|gracias a ti|de nada|muchas gracias|mil gracias|gracias|graciass+)\s*)+[.\s!🙏👍😊🚀🙌]*$/i;
             const ultimoMensajeBot = memoriaChats[chatID].slice().reverse().find(m => m.startsWith('Mr X:'));
             const botHizoPregunta = ultimoMensajeBot && ultimoMensajeBot.includes('?');
