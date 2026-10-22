@@ -4,6 +4,12 @@ services:
     build: .
     container_name: mrx_bot
     restart: always
+    environment:
+      - GEMINI_KEY_1=${GEMINI_KEY_1}
+      - GEMINI_KEY_2=${GEMINI_KEY_2}
+      - GEMINI_KEY_3=${GEMINI_KEY_3}
+      - GEMINI_KEY_4=${GEMINI_KEY_4}
+      - GEMINI_KEY_5=${GEMINI_KEY_5}
     volumes:
       - session_data:/app/.wwebjs_auth 
       - /home/ubuntu/mrx-secrets/serviceAccountKey.json.json:/app/serviceAccountKey.json.json
