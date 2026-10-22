@@ -120,6 +120,7 @@ async function manejarMensaje(message, client) {
 
             const infoCliente = buffersMensajes[chatID].datosCliente || { numero: numeroTel, nombre: nombreCliente };
             let textoFinal = "";
+            let textoPuro = ""; // 🔥 Guardará solo lo que el usuario escribió (sin etiquetas del bot)
             let partesMultimedia = [];
 
             for (const msg of mensajesAgrupados) {
@@ -138,10 +139,16 @@ async function manejarMensaje(message, client) {
                 } else if (msg.type === 'document') {
                     textoFinal += ` [DOCUMENTO ENVIADO: ${msg.body || 'Archivo'}]`;
                 }
-                if (msg.body) textoFinal += ` ${msg.body}`;
+                if (msg.body) {
+                    textoFinal += ` ${msg.body}`;
+                    textoPuro += ` ${msg.body}`; 
+                }
             }
 
             const textoLimpio = textoFinal.trim();
+            // 🔥 Limpiamos signos solo al texto puro para evaluar las reglas con precisión
+            const textoReglas = textoPuro.trim().replace(/[.,!¡¿?]/g, '');
+
             if (!textoLimpio && partesMultimedia.length === 0) {
                 procesandoChat.delete(chatID);
                 return;
@@ -156,10 +163,10 @@ async function manejarMensaje(message, client) {
             // 🚀 CORTAFUEGOS DE REGLAS Y SALUDOS (UNIFICADO)
             for (const regla of reglas) {
                 const idRegla = regla.id || regla.media;
-                if (regla.regex.test(textoLimpio) && !bannersEnviados[chatID].has(idRegla)) {
+                // Validamos contra 'textoReglas' para ignorar el [FOTO ENVIADA]
+                if (textoReglas && regla.regex.test(textoReglas) && !bannersEnviados[chatID].has(idRegla)) {
                     bannersEnviados[chatID].add(idRegla);
                     try {
-                        // Verifica que haya imagen asignada antes de intentar enviarla
                         if (regla.media && fs.existsSync(regla.media)) {
                             const media = MessageMedia.fromFilePath(regla.media);
                             await enviarMensajeBot(client, chatID, media, { caption: regla.respuesta });
@@ -174,15 +181,13 @@ async function manejarMensaje(message, client) {
                     return; 
                 }
             }
-
-            const textoSinSignos = textoLimpio.replace(/[.,!¡¿?]/g, '').trim();
             
             // 🛑 CORTAFUEGOS DE CORTESÍA
-            const cortesiaRegex = /^(?:(?:ok|dale|sisi|si|listo|pronto|buenisimo|genial|perfecto|joya|impecable|excelente|oka|chau|hasta ma[ñn]ana|hasta luego|buenas noches|buenas tardes|buen dia|gracias a ti|de nada|muchas gracias|mil gracias|gracias|graciass+)\s*)+[.\s!🙏👍😊🚀🙌]*$/i;
+            const cortesiaRegex = /^(?:(?:ok|dale|sisi|si|listo|pronto|buenisimo|genial|perfecto|joya|impecable|excelente|oka|chau|hasta ma[ñn]ana|hasta luego|buenas noches|buenas tardes|buen dia|gracias a ti|de nada|muchas gracias|mil gracias|gracias|graciass+)\s*)+$/i;
             const ultimoMensajeBot = memoriaChats[chatID].slice().reverse().find(m => m.startsWith('Mr X:'));
             const botHizoPregunta = ultimoMensajeBot && ultimoMensajeBot.includes('?');
 
-            if (cortesiaRegex.test(textoSinSignos) && partesMultimedia.length === 0 && !botHizoPregunta) {
+            if (textoReglas && cortesiaRegex.test(textoReglas) && partesMultimedia.length === 0 && !botHizoPregunta) {
                 if (ultimoAgradecimiento[infoCliente.numero] && (Date.now() - ultimoAgradecimiento[infoCliente.numero] < 14400000)) { 
                     procesandoChat.delete(chatID); 
                     return;
