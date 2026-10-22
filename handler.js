@@ -190,7 +190,7 @@ async function manejarMensaje(message, client) {
             // ==============================================================
             // 🛑 2. CORTAFUEGOS DE SALUDO INICIAL
             // ==============================================================
-            const saludoRegex = /^(hola|buenas|buen d[ií]a|buenas tardes|buenas noches|ola|hello|que tal|qu[eé] tal|saludos|info|informaci[oó]n|servicios|qu[eé] servicios ofrecen|hola quiero info|mas info)$/i;
+            const saludoRegex = /^(hola|buenas|buen d[ií]a|buenas tardes|buenas noches|ola|hello|que tal|qu[eé] tal|saludos|info|informaci[oó]n|servicios|qu[eé] servicios ofrecen|hola qu[eé] servicios tienen|hola quiero info|mas info)$/i;
             
             if (saludoRegex.test(textoSinSignos) && partesMultimedia.length === 0) {
                 const menuFijo = `¡Hola! Somos MR.X 💻\nServicio Técnico de Computadoras - Cix\n\n✅ Reparación de bisagras y bases\n✅ Reconstrucción de carcasas\n✅ Venta y cambio de pantallas y teclados\n✅ Instalación programas de ingeniería\n✅ Formateo y mantenimiento\n\n🤝 Atención personalizada.\n📍 Estamos en el centro de Chiclayo (Elias Aguirre 331, piso 3).\n\n¿En qué te podemos ayudar hoy?`;
