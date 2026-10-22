@@ -14,7 +14,7 @@ const argsPuppeteer = [
 
 // Estos dos argumentos ayudan en servidores Linux pequeños, pero en Mac causan fallos en Puppeteer
 if (esLinux) {
-    argsPuppeteer.push('--no-zygote', '--single-process');
+    argsPuppeteer.push('--no-zygote');
 }
 
 const opcionesConfig = {
